@@ -167,6 +167,12 @@ def generate_csv_file_name(args):
   return file_name
 
 def main(args):
+  if not args.outfile:
+    if len(args.dmarcfile) == 1:
+      args.outfile = generate_csv_file_name(args)
+    else:
+      raise Exception("--outfile must be set if more than 1 dmarcfile to be processed")
+
   with open(args.outfile, 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=get_all_field_names())
     writer.writeheader()
@@ -185,12 +191,6 @@ if __name__ == "__main__":
   options.add_argument("dmarcfile", help="dmarc file(s) in XML format", nargs="+")
   options.add_argument("--outfile", help="name of output CSV file")
   args = options.parse_args()
-
-  if not args.outfile:
-    if len(args.dmarcfile) == 1:
-      args.outfile = generate_csv_file_name(args)
-    else:
-      raise Exception("--outfile must be set if more than 1 dmarcfile to be processed")
   
   main(args)
 
